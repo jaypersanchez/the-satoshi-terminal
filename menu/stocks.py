@@ -27,8 +27,16 @@ class Stocks(QWidget):
         self.setWindowTitle('Stocks')
         self.show()
             
+    def stockEvents(self):
+        openbb.economy.events()
+        
     def stockSearch(self):
-        stocks_df = pd.DataFrame(openbb.stocks.search(country="United States", exchange_country="Germany"))
-        print(stocks_df)
+        columns = ['name', 'country', 'sector', 'industry_group', 'industry', 'exchange']
+        #stocks_df = pd.DataFrame(openbb.stocks.search(country="United States", exchange_country="Germany")) #this will open OpenBB dataframe
+        #stocks_df = openbb.stocks.search(country="United States", exchange_country="Germany")
+        stocks_df = openbb.stocks.search(country="United States", exchange_country="Canada")
+        stocks_dict = stocks_df.to_dict()
+        #print(stocks_df.columns)
+        print(stocks_df[columns])
 
         

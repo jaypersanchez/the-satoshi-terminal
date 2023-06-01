@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.stocks = Stocks()
+            self.stocks.stockSearch()
         except Exception as e:
             print(e)
         

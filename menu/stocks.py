@@ -14,7 +14,7 @@ class Stocks(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
-        
+        self.stockEvents()
         
     def initUI(self):
         print('You clicked the Stocks button')
@@ -27,8 +27,6 @@ class Stocks(QWidget):
         self.setWindowTitle('Stocks')
         self.show()
             
-    def stockEvents(self):
-        openbb.economy.events()
         
     def stockSearch(self):
         columns = ['name', 'country', 'sector', 'industry_group', 'industry', 'exchange']
@@ -36,7 +34,8 @@ class Stocks(QWidget):
         #stocks_df = openbb.stocks.search(country="United States", exchange_country="Germany")
         stocks_df = openbb.stocks.search(country="United States", exchange_country="Canada")
         stocks_dict = stocks_df.to_dict()
-        #print(stocks_df.columns)
-        print(stocks_df[columns])
+        stocks_dict['title'] = "Satoshi Terminal"
+        new_df = pd.DataFrame(stocks_dict)
+        print(new_df[columns])
 
         

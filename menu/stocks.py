@@ -26,6 +26,17 @@ class Stocks(QWidget):
         self.move(800, 200)
         self.setWindowTitle('Stocks')
         self.show()
+        
+        # add the button
+        self.search = QPushButton("Stock Search", self)
+        self.search.setToolTip('Search for stocks in a given country')
+        self.search.clicked.connect(self.stockSearch)
+        # set the layout
+        self.hbox = QHBoxLayout()
+        self.hbox.addStretch(1)
+        self.hbox.addWidget(self.search)
+        self.hbox.addStretch(1)
+        self.setLayout(self.hbox)
             
         
     def stockSearch(self):

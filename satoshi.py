@@ -14,6 +14,7 @@ from PyQt5.QtCore import QSize
 from menu.stocks import Stocks
 from menu.crypto import Crypto
 from menu.funds import Funds
+from menu.forex import Forex
  
 # Create main window
 class MainWindow(QMainWindow):
@@ -55,6 +56,11 @@ class MainWindow(QMainWindow):
         btnFunds.adjustSize()
         btnFunds.clicked.connect(self.on_click_funds)
         
+        btnForex = QPushButton('Forex', self)
+        btnForex.setToolTip('Click to open Forex page')
+        btnForex.adjustSize()
+        btnForex.clicked.connect(self.on_click_forex)
+        
         btnEconomicEvents = QPushButton('Economic Events', self)
         btnEconomicEvents.setToolTip('Click to view current economic events')
         btnEconomicEvents.adjustSize()
@@ -65,7 +71,9 @@ class MainWindow(QMainWindow):
         main_hbox.addWidget(btnStocks)
         main_hbox.addWidget(btnCrypto)
         main_hbox.addWidget(btnFunds)
+        main_hbox.addWidget(btnForex)
         main_hbox.addWidget(btnEconomicEvents)
+        
         # Add vertical contaier to horizontal container
         hbox.addLayout(main_hbox)
         self.show()
@@ -75,7 +83,7 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.stocks = Stocks()
-            #self.stocks.stockSearch()
+            
         except Exception as e:
             print(e)
         
@@ -84,7 +92,7 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.crypto = Crypto()
-            #self.stocks.stockSearch()
+            
         except Exception as e:
             print(e)
     
@@ -93,7 +101,15 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.funds = Funds()
-            #self.stocks.stockSearch()
+            
+        except Exception as e:
+            print(e)
+            
+    def on_click_forex(self):
+        window = QWidget()
+        try:
+            self.forex = Forex()
+            
         except Exception as e:
             print(e)
         

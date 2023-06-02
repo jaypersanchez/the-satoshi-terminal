@@ -6,37 +6,26 @@ import sys
 import pandas as pd
 from openbb_terminal.sdk import openbb
 # Import necessary libraries
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QProgressBar
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 
-class Stocks(QWidget):
+class Forex(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
         #self.stockEvents()
         
     def initUI(self):
-        print('You clicked the Stocks button')
+        print('You clicked the Forex button')
         # Create a new window
         #stockWindow = QWidget()
 
         # Set size and position of the window
         self.resize(500, 500)
         self.move(800, 200)
-        self.setWindowTitle('Stocks')
+        self.setWindowTitle('Forex Commodities')
         self.show()
-        
-        # add the button
-        self.search = QPushButton("Stock Search", self)
-        self.search.setToolTip('Search for stocks in a given country')
-        self.search.clicked.connect(self.stockSearch)
-        # set the layout
-        self.hbox = QHBoxLayout()
-        self.hbox.addStretch(1)
-        self.hbox.addWidget(self.search)
-        self.hbox.addStretch(1)
-        self.setLayout(self.hbox)
             
         
     def stockSearch(self):
@@ -49,19 +38,4 @@ class Stocks(QWidget):
         new_df = pd.DataFrame(stocks_dict)
         print(new_df[columns])
 
-        #create status bar
-        self.progress = QProgressBar(self)
-        self.progress.setGeometry(200, 80, 250, 20)
-        self.progress.setMinimum(0)
-        self.progress.setMaximum(100)
-        self.progress.setValue(0)
-        self.progress.setVisible(True)
-
-        #run stockSearch function and start status bar
-        for i in range (1,100):
-            self.progress.setValue(i)
-            QtTest.QTest.qWait(100)
-            i +=1
-
-        self.progress.setVisible(False)
         

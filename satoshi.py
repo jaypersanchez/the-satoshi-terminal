@@ -83,7 +83,6 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.stocks = Stocks()
-            
         except Exception as e:
             print(e)
         
@@ -92,7 +91,6 @@ class MainWindow(QMainWindow):
         window = QWidget()
         try:
             self.crypto = Crypto()
-            
         except Exception as e:
             print(e)
     

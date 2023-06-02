@@ -10,21 +10,21 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout,
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 
-class Stocks(QWidget):
+class Funds(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
         #self.stockEvents()
         
     def initUI(self):
-        print('You clicked the Stocks button')
+        print('You clicked the Funds button')
         # Create a new window
         #stockWindow = QWidget()
 
         # Set size and position of the window
         self.resize(500, 500)
         self.move(800, 200)
-        self.setWindowTitle('Stocks')
+        self.setWindowTitle('Mutual Funds')
         self.show()
             
         

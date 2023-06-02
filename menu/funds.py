@@ -6,7 +6,7 @@ import sys
 import pandas as pd
 from openbb_terminal.sdk import openbb
 # Import necessary libraries
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 
@@ -26,16 +26,38 @@ class Funds(QWidget):
         self.move(800, 200)
         self.setWindowTitle('Mutual Funds')
         self.show()
-            
         
-    def stockSearch(self):
-        columns = ['name', 'country', 'sector', 'industry_group', 'industry', 'exchange']
-        #stocks_df = pd.DataFrame(openbb.stocks.search(country="United States", exchange_country="Germany")) #this will open OpenBB dataframe
-        #stocks_df = openbb.stocks.search(country="United States", exchange_country="Germany")
-        stocks_df = openbb.stocks.search(country="United States", exchange_country="Canada")
-        stocks_dict = stocks_df.to_dict()
-        stocks_dict['title'] = "Satoshi Terminal"
-        new_df = pd.DataFrame(stocks_dict)
-        print(new_df[columns])
+        # add the button
+        self.search = QPushButton("Search Funds", self)
+        self.search.setToolTip('Search for mutual funds')
+        self.search.clicked.connect(self.fundSearch)
+        # set the layout
+        self.hbox = QHBoxLayout()
+        self.hbox.addStretch(1)
+        self.hbox.addWidget(self.search)
+        self.hbox.addStretch(1)
+        self.setLayout(self.hbox)    
+        
+    def fundSearch(self):
+        funds_df = pd.DataFrame(openbb.funds.search("Vanguard", "US"))
+        funds_df.head()
+        print(funds_df)
+        self.show()
+        
+        self.label = QLabel("Mutual Funds", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(funds_df))
+        for i in range(len(funds_df)):
+            for j in range(4):
+                if j < funds_df.shape[1]:
+                     self.table.setItem(i, j, QTableWidgetItem(str(
+                    funds_df.iloc[i][j])))
+
+        self.setLayout(self.hbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
+        
 
         

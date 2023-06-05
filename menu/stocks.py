@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout,
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.CountriesComboBox import CountriesComboBox
+from modules.TickerSymbolsComboBox import TickerSymbolsComboBox
 
 class Stocks(QWidget):
     
@@ -20,8 +21,8 @@ class Stocks(QWidget):
         country_combo1 = CountriesComboBox()
         global exchange_country_combo2
         exchange_country_combo2 = CountriesComboBox()
-        #global selected_country
-        #global selected_exchange
+        global ticker_symbols_combobox
+        ticker_symbols_combobox = TickerSymbolsComboBox
         self.initUI()
                
     def initUI(self):
@@ -38,6 +39,18 @@ class Stocks(QWidget):
         # Connect the signal to the slot
         country_combo1.currentIndexChanged.connect(self.on_index_changed)
         exchange_country_combo2.currentIndexChanged.connect(self.on_index_changed)
+        #ticker_symbols_combobox.currentIndexChanged.connect(self.on_ticker_changed)
+        
+        # add search for specific stock symbol for candle stick graphing
+        self.search_ticker = QPushButton("Graph Ticker Symbol",self)
+        self.search_ticker.setToolTip("Load specified ticker symbol to displayed on a candle stick chart")
+        self.search_ticker.clicked.connect(self.graphTickerSymbol)
+        # set the layout
+        self.chart_hbox = QHBoxLayout()
+        self.chart_hbox.addStretch(1)
+        self.chart_hbox.addWidget(self.search_ticker)
+        #self.chart_hbox.addWidget(self.ticker_symbols_combobox)
+        
         
         # add the search for stocks in a given country button
         self.search = QPushButton("Stock Search", self)
@@ -50,28 +63,38 @@ class Stocks(QWidget):
         self.hbox.addWidget(country_combo1)
         self.hbox.addWidget(exchange_country_combo2)
         self.hbox.addStretch(1)
-        #self.setLayout(self.hbox)
+        
         
         #now add all other layouts on the main layouts
         self.vbox.addStretch(1)
         self.vbox.addLayout(self.hbox)
+        self.vbox.addLayout(self.chart_hbox)
         
         self.setLayout(self.vbox)
     
     def on_index_changed(self):
-        #country_combo1Index = country_combo1.currentIndex()
         global selected_country
         global selected_exchange
         selected_country = country_combo1.currentText()
         selected_exchange = exchange_country_combo2.currentText()
-        #exchange_country_combo2.setCurrentIndex(country_combo1Index)
         #print("Selected country: %s" % selected_country)
         #print("Selected country: %s" % selected_exchange_country)
+        
+    def on_ticker_changed(self):
+        global selected_ticker
+        
+        #selected_ticker = ticker_symbols_combobox.currentText()
+        
+    def graphTickerSymbol(self):
+        global ticker_text 
+        print("Graph")
+        chart_df = openbb.stocks.candle("AAPL")
+        chart_dict = chart_df.to_dict()
+        new_df = pd.DataFrame(chart_df)
     
     def stockSearch(self):
         print("Selected country: %s" % selected_country)
         print("Selected country: %s" % selected_exchange)
-        
         columns = ['name', 'country', 'sector', 'industry_group', 'industry', 'exchange']
         stocks_df = openbb.stocks.search(country=selected_country, exchange_country=selected_exchange)
         stocks_dict = stocks_df.to_dict()

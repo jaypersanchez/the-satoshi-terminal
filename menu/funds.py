@@ -6,7 +6,7 @@ import sys
 import pandas as pd
 from openbb_terminal.sdk import openbb
 # Import necessary libraries
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem, QLineEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.FundNamesComboBox import FundNamesComboBox
@@ -32,6 +32,13 @@ class Funds(QWidget):
         
         fund_term.currentIndexChanged.connect(self.on_index_changed)
         
+        # add manual search
+        self.manual_search_btn = QPushButton("Search This Fund Manually", self)
+        self.manual_search_btn.setToolTip("Provide a mutual fund name that's not on the list")
+        self.manual_search_btn.clicked.connect(self.searchInputFund)
+        self.manual_search_input_field = QLineEdit(self)
+        
+        
         # add the button
         self.search = QPushButton("Search Funds", self)
         self.search.setToolTip('Search for mutual funds')
@@ -41,6 +48,8 @@ class Funds(QWidget):
         self.hbox.addStretch(1)
         self.hbox.addWidget(self.search)
         self.hbox.addWidget(fund_term)
+        self.hbox.addWidget(self.manual_search_btn)
+        self.hbox.addWidget(self.manual_search_input_field)
         self.hbox.addStretch(1)
         
         #now add all other layouts on the main layouts
@@ -48,6 +57,30 @@ class Funds(QWidget):
         self.vbox.addLayout(self.hbox)
         
         self.setLayout(self.vbox) 
+        
+    def searchInputFund(self):
+        global inputFundName
+        inputFundName = self.manual_search_input_field.text()
+        print("Fund Name: %s" % inputFundName)
+        funds_df = pd.DataFrame(openbb.funds.search(inputFundName,"",10))
+        funds_df.head()
+        print(funds_df)
+        self.show()
+        
+        self.label = QLabel("Mutual Funds", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(funds_df))
+        for i in range(len(funds_df)):
+            for j in range(4):
+                if j < funds_df.shape[1]:
+                     self.table.setItem(i, j, QTableWidgetItem(str(
+                    funds_df.iloc[i][j])))
+
+        self.setLayout(self.hbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
         
     def on_index_changed(self):
         global selected_term

@@ -10,12 +10,15 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout,
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.CryptoNamesComboBox import CryptoNamesComboBox
+from modules.CryptoSymbolsComboBox import CryptoSymbolsComboBox
 
 class Crypto(QWidget):
     def __init__(self):
         super().__init__()
         global crypto_currency_combobox
         crypto_currency_combobox = CryptoNamesComboBox()
+        global crypto_symbols
+        crypto_symbols = CryptoSymbolsComboBox()
         self.initUI()
         
         
@@ -34,16 +37,22 @@ class Crypto(QWidget):
         
         # add crypto currencly list
         crypto_currency_combobox.currentIndexChanged.connect(self.on_index_changed)
+        crypto_symbols.currentIndexChanged.connect(self.on_change_cryptoSymbol)
         
         # add the button
         self.search = QPushButton("Find Crypto", self)
         self.search.setToolTip('Search for stablecoins')
         self.search.clicked.connect(self.cryptoFind)
+        self.graph = QPushButton("Graph Selected Crypto Currency", self)
+        self.graph.setToolTip("Select a crypto currency from the list and graph on a candlestick")
+        self.graph.clicked.connect(self.graphCrypto)
         # set the layout
         self.hbox = QHBoxLayout()
         self.hbox.addStretch(1)
         self.hbox.addWidget(self.search)
         self.hbox.addWidget(crypto_currency_combobox)
+        self.hbox.addWidget(self.graph)
+        self.hbox.addWidget(crypto_symbols)
         self.hbox.addStretch(1)
                
         #now add all other layouts on the main layouts
@@ -54,10 +63,20 @@ class Crypto(QWidget):
         
     def on_index_changed(self):
         global selected_crypto
-        selected_crypto = crypto_currency_combobox.currentText()   
+        selected_crypto = crypto_currency_combobox.currentText()  
+        
+    def graphCrypto(self):
+        print("Selected crypto: %s" % selected_symbol)
+        chart_df = openbb.crypto.candle(symbol=selected_symbol) 
+        chart_dict = chart_df.to_dict()
+        new_df = pd.DataFrame(chart_df)
+    
+    def on_change_cryptoSymbol(self):
+        global selected_symbol
+        selected_symbol = crypto_symbols.currentText()
         
     def cryptoFind(self):
-        print("Selected ticker: %s" % selected_crypto)
+        print("Selected symbol: %s" % selected_crypto)
         #crypto_df = pd.DataFrame(openbb.crypto.find("eth", "CoinGecko", "name", 25))
         crypto_df = pd.DataFrame(openbb.crypto.find(selected_crypto))
         crypto_df.head()

@@ -44,6 +44,7 @@ class Crypto(QWidget):
          
         # add data to display ~1500 top performing ERC20 tokens
         self.displayERC20()
+        self.displayNFTCollections()
         #self.dashboard_vbox.addWidget(erc_df)
         
         # add the button
@@ -83,6 +84,26 @@ class Crypto(QWidget):
             for j in range(4):
                 self.table.setItem(i, j, QTableWidgetItem(str(
                     erc_df.iloc[i][j])))
+
+        self.setLayout(self.vbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
+        
+    def displayNFTCollections(self):
+        global nft_df
+        nft_df = pd.DataFrame(openbb.crypto.nft.collections())
+        nft_df.head()
+        print(nft_df)
+        self.show()
+        self.label = QLabel("NFT Collections from OpenSea", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(nft_df))
+        for i in range(len(nft_df)):
+            for j in range(4):
+                self.table.setItem(i, j, QTableWidgetItem(str(
+                    nft_df.iloc[i][j])))
 
         self.setLayout(self.vbox)
         self.layout().addWidget(self.label)

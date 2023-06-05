@@ -39,6 +39,13 @@ class Crypto(QWidget):
         crypto_currency_combobox.currentIndexChanged.connect(self.on_index_changed)
         crypto_symbols.currentIndexChanged.connect(self.on_change_cryptoSymbol)
         
+        # add area to display crypto market data
+        self.dashboard_vbox = QVBoxLayout()
+         
+        # add data to display ~1500 top performing ERC20 tokens
+        self.displayERC20()
+        #self.dashboard_vbox.addWidget(erc_df)
+        
         # add the button
         self.search = QPushButton("Find Crypto", self)
         self.search.setToolTip('Search for stablecoins')
@@ -57,9 +64,30 @@ class Crypto(QWidget):
                
         #now add all other layouts on the main layouts
         self.vbox.addStretch(1)
+        self.vbox.addLayout(self.dashboard_vbox)
         self.vbox.addLayout(self.hbox)
        
         self.setLayout(self.vbox)  
+     
+    def displayERC20(self):
+        global erc_df
+        erc_df = pd.DataFrame(openbb.crypto.onchain.erc20_tokens())
+        erc_df.head()
+        print(erc_df)
+        self.show()
+        self.label = QLabel("Top Performing ERC20 Tokens", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(erc_df))
+        for i in range(len(erc_df)):
+            for j in range(4):
+                self.table.setItem(i, j, QTableWidgetItem(str(
+                    erc_df.iloc[i][j])))
+
+        self.setLayout(self.vbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
         
     def on_index_changed(self):
         global selected_crypto

@@ -9,23 +9,28 @@ from openbb_terminal.sdk import openbb
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
+from modules.FundNamesComboBox import FundNamesComboBox
 
 class Funds(QWidget):
     def __init__(self):
         super().__init__()
+        global fund_term
+        fund_term = FundNamesComboBox()
         self.initUI()
-        #self.stockEvents()
-        
+                
     def initUI(self):
-        print('You clicked the Funds button')
-        # Create a new window
-        #stockWindow = QWidget()
-
+        
+        
         # Set size and position of the window
         self.resize(500, 500)
         self.move(800, 200)
         self.setWindowTitle('Mutual Funds')
         self.show()
+        
+        #main layout of the screen
+        self.vbox = QVBoxLayout()
+        
+        fund_term.currentIndexChanged.connect(self.on_index_changed)
         
         # add the button
         self.search = QPushButton("Search Funds", self)
@@ -35,11 +40,25 @@ class Funds(QWidget):
         self.hbox = QHBoxLayout()
         self.hbox.addStretch(1)
         self.hbox.addWidget(self.search)
+        self.hbox.addWidget(fund_term)
         self.hbox.addStretch(1)
-        self.setLayout(self.hbox)    
+        
+        #now add all other layouts on the main layouts
+        self.vbox.addStretch(1)
+        self.vbox.addLayout(self.hbox)
+        
+        self.setLayout(self.vbox) 
+        
+    def on_index_changed(self):
+        global selected_term
+        selected_term = fund_term.currentText()
+        print("Selected term: %s" % selected_term)   
         
     def fundSearch(self):
-        funds_df = pd.DataFrame(openbb.funds.search("Vanguard", "US"))
+        #funds_df = pd.DataFrame(openbb.funds.search("Vanguard", "United States"))
+        #funds_df = pd.DataFrame(openbb.funds.search("","",1000))
+        #funds_df = pd.DataFrame(openbb.funds.search("AMP","",200))
+        funds_df = pd.DataFrame(openbb.funds.search(selected_term,"",200))
         funds_df.head()
         print(funds_df)
         self.show()

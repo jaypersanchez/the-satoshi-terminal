@@ -6,7 +6,7 @@ import sys
 import pandas as pd
 from openbb_terminal.sdk import openbb
 # Import necessary libraries
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QProgressBar, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QProgressBar, QComboBox, QLineEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.CountriesComboBox import CountriesComboBox
@@ -22,7 +22,7 @@ class Stocks(QWidget):
         global exchange_country_combo2
         exchange_country_combo2 = CountriesComboBox()
         global ticker_symbols_combobox
-        ticker_symbols_combobox = TickerSymbolsComboBox
+        ticker_symbols_combobox = TickerSymbolsComboBox()
         self.initUI()
                
     def initUI(self):
@@ -39,7 +39,7 @@ class Stocks(QWidget):
         # Connect the signal to the slot
         country_combo1.currentIndexChanged.connect(self.on_index_changed)
         exchange_country_combo2.currentIndexChanged.connect(self.on_index_changed)
-        #ticker_symbols_combobox.currentIndexChanged.connect(self.on_ticker_changed)
+        ticker_symbols_combobox.currentIndexChanged.connect(self.on_ticker_changed)
         
         # add search for specific stock symbol for candle stick graphing
         self.search_ticker = QPushButton("Graph Ticker Symbol",self)
@@ -49,7 +49,7 @@ class Stocks(QWidget):
         self.chart_hbox = QHBoxLayout()
         self.chart_hbox.addStretch(1)
         self.chart_hbox.addWidget(self.search_ticker)
-        #self.chart_hbox.addWidget(self.ticker_symbols_combobox)
+        self.chart_hbox.addWidget(ticker_symbols_combobox)
         
         
         # add the search for stocks in a given country button
@@ -82,13 +82,12 @@ class Stocks(QWidget):
         
     def on_ticker_changed(self):
         global selected_ticker
-        
-        #selected_ticker = ticker_symbols_combobox.currentText()
+        selected_ticker = ticker_symbols_combobox.currentText()
+        print("Selected ticker: %s" % selected_ticker)
         
     def graphTickerSymbol(self):
-        global ticker_text 
-        print("Graph")
-        chart_df = openbb.stocks.candle("AAPL")
+        print("Selected ticker: %s" % selected_ticker)
+        chart_df = openbb.stocks.candle(selected_ticker)
         chart_dict = chart_df.to_dict()
         new_df = pd.DataFrame(chart_df)
     

@@ -21,7 +21,7 @@ class App(QMainWindow):
     def __init__(self): 
         super().__init__() 
         
-        self.title = 'PyQt5 dropdown box example'
+        self.title = 'Ticker Symbols'
         self.left = 10
         self.top = 10
         self.width = 300

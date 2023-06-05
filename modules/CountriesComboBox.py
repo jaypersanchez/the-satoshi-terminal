@@ -32,7 +32,7 @@ class CountriesComboBox(QComboBox):
                      'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Tajikistan',
                      'Tanzania', 'Thailand', 'Timor-Leste (East Timor)', 'Togo', 'Tonga', 'Trinidad and Tobago', 
                      'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates',
-                     'United Kingdom', 'United States of America', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City',
+                     'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City',
                      'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'] 
         countries.sort() 
         self.addItems(countries)

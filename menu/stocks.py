@@ -12,8 +12,16 @@ from PyQt5.QtCore import QSize
 from modules.CountriesComboBox import CountriesComboBox
 
 class Stocks(QWidget):
+    
     def __init__(self):
         super().__init__()
+        #create country combo instances
+        global country_combo1
+        country_combo1 = CountriesComboBox()
+        global exchange_country_combo2
+        exchange_country_combo2 = CountriesComboBox()
+        #global selected_country
+        #global selected_exchange
         self.initUI()
                
     def initUI(self):
@@ -27,9 +35,9 @@ class Stocks(QWidget):
         #main layout of the screen
         self.vbox = QVBoxLayout()
         
-        #create country combo instances
-        country_combo1 = CountriesComboBox()
-        exchange_country_combo2 = CountriesComboBox()
+        # Connect the signal to the slot
+        country_combo1.currentIndexChanged.connect(self.on_index_changed)
+        exchange_country_combo2.currentIndexChanged.connect(self.on_index_changed)
         
         # add the search for stocks in a given country button
         self.search = QPushButton("Stock Search", self)
@@ -43,24 +51,33 @@ class Stocks(QWidget):
         self.hbox.addWidget(exchange_country_combo2)
         self.hbox.addStretch(1)
         #self.setLayout(self.hbox)
-             
         
         #now add all other layouts on the main layouts
         self.vbox.addStretch(1)
         self.vbox.addLayout(self.hbox)
         
-        
         self.setLayout(self.vbox)
-        
+    
+    def on_index_changed(self):
+        #country_combo1Index = country_combo1.currentIndex()
+        global selected_country
+        global selected_exchange
+        selected_country = country_combo1.currentText()
+        selected_exchange = exchange_country_combo2.currentText()
+        #exchange_country_combo2.setCurrentIndex(country_combo1Index)
+        #print("Selected country: %s" % selected_country)
+        #print("Selected country: %s" % selected_exchange_country)
+    
     def stockSearch(self):
+        print("Selected country: %s" % selected_country)
+        print("Selected country: %s" % selected_exchange)
+        
         columns = ['name', 'country', 'sector', 'industry_group', 'industry', 'exchange']
-        #stocks_df = pd.DataFrame(openbb.stocks.search(country="United States", exchange_country="Germany")) #this will open OpenBB dataframe
-        #stocks_df = openbb.stocks.search(country="United States", exchange_country="Germany")
-        stocks_df = openbb.stocks.search(country="United States", exchange_country="Canada")
+        stocks_df = openbb.stocks.search(country=selected_country, exchange_country=selected_exchange)
         stocks_dict = stocks_df.to_dict()
         stocks_dict['title'] = "Satoshi Terminal"
-        new_df = pd.DataFrame(stocks_dict)
-        print(new_df[columns])
+        new_df = pd.DataFrame(stocks_dict, index=stocks_dict.keys())
+        print(new_df)
 
         #create status bar
         

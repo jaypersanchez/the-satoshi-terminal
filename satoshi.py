@@ -10,6 +10,7 @@ from openbb_terminal.sdk import openbb
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QTableView, QHeaderView
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
+from PyQt5.QtCore import Qt
 #menu actions
 from menu.stocks import Stocks
 from menu.crypto import Crypto
@@ -63,27 +64,27 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         
         # Create buttons in the window
-        btnStocks = QPushButton('Stocks', self)
+        btnStocks = QPushButton('Stocks or F1', self)
         btnStocks.setToolTip('Click to open Stocks page')
         btnStocks.adjustSize()
         btnStocks.clicked.connect(self.on_click_stocks)
 
-        btnCrypto = QPushButton('Crypto', self)
+        btnCrypto = QPushButton('Crypto or F2', self)
         btnCrypto.setToolTip('Click to open Cryptocurrency page')
         btnCrypto.adjustSize()
         btnCrypto.clicked.connect(self.on_click_crypto)
 
-        btnFunds = QPushButton('Funds', self)
+        btnFunds = QPushButton('Funds or F3', self)
         btnFunds.setToolTip('Click to open Funds page')
         btnFunds.adjustSize()
         btnFunds.clicked.connect(self.on_click_funds)
         
-        btnForex = QPushButton('Forex', self)
+        btnForex = QPushButton('Forex or F4', self)
         btnForex.setToolTip('Click to open Forex page')
         btnForex.adjustSize()
         btnForex.clicked.connect(self.on_click_forex)
         
-        btnEconomicEvents = QPushButton('Economic Events', self)
+        btnEconomicEvents = QPushButton('Economic Events or F5', self)
         btnEconomicEvents.setToolTip('Click to view current economic events')
         btnEconomicEvents.adjustSize()
         btnEconomicEvents.clicked.connect(self.on_click_economic_events)
@@ -99,7 +100,20 @@ class MainWindow(QMainWindow):
         # Add vertical contaier to horizontal container
         hbox.addLayout(main_hbox)
         self.show()
- 
+    
+    # open Stocks windows with F1 keyboard
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_F1:
+            self.on_click_stocks()
+        if event.key() == Qt.Key_F2:
+            self.on_click_crypto()
+        if event.key() == Qt.Key_F3:
+            self.on_click_funds()
+        if event.key() == Qt.Key_F4:
+            self.on_click_forex()
+        if event.key() == Qt.Key_F5:
+            self.on_click_economic_events()
+    
     def on_click_stocks(self):
         #print('You clicked the Stocks button')
         window = QWidget()

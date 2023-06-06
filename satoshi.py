@@ -15,6 +15,8 @@ from menu.stocks import Stocks
 from menu.crypto import Crypto
 from menu.funds import Funds
 from menu.forex import Forex
+import geocoder
+
  
 # Create main window
 class MainWindow(QMainWindow):
@@ -27,11 +29,31 @@ class MainWindow(QMainWindow):
         self.top = 100
         self.width = 1000 #640
         self.height = 100 #480
+        #will require Google Maps Geocoding API.  geocoder unable to pickup country, state/province and city
+        self.getCurrentGeoLocation()
         self.initUI()
+    
+    def getCurrentGeoLocation(self):
+        g = geocoder.ip('me')
+        lat = g.latlng[0]
+        lng = g.latlng[1]
+
+        #location = geocoder.reverse_geocode(lat, lng)
+        location = geocoder.reverse((lat,lng))
+
+        country = location.country
+        state = location.state
+        city = location.city
+
+        print('Country: ', country)
+        print('State/Province: ', state)
+        print('City: ', city)
  
     def initUI(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height) # changed to self.width and self.height
+        # Set window icon
+        self.setWindowIcon(QIcon('assets/icon.jpeg'))
         self.move(0, 0)
         
         #Create QWidget

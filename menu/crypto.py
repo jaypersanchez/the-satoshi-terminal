@@ -32,6 +32,7 @@ class Crypto(QWidget):
         self.resize(1300, 800)
         self.move(0, 200)
         self.setWindowTitle('Crypto Currencies')
+        self.setWindowIcon(QIcon('assets/icon.jpeg'))
         self.show()
         
         #main layout of the screen

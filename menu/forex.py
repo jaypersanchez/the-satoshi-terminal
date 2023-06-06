@@ -70,15 +70,19 @@ class Forex(QWidget):
     
     def graphCurrencyPair(self):
         print("graphing")
+        graph_df = pd.DataFrame(openbb.forex.load(selected_to, selected_from))
+        openbb.forex.candle(graph_df)
+        graph_dict = graph_df.to_dict()
+        new_df = pd.DataFrame(graph_df)
         
     def to_symbol_changed(self):
         global selected_to
-        symbolsComboBox_to.currentText()
+        selected_to = symbolsComboBox_to.currentText()
         print("To pair: %s" % selected_to)
         
     def from_symbol_changed(self):
         global selected_from
-        symbolsComboBox_from.currentText()    
+        selected_from = symbolsComboBox_from.currentText()    
         print("From pair: %s" % selected_from)
         
     def on_index_changed(self):

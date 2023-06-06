@@ -11,6 +11,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.CryptoNamesComboBox import CryptoNamesComboBox
 from modules.CryptoSymbolsComboBox import CryptoSymbolsComboBox
+from modules.CurrencySymbolsComboBox import CurrencySymbolsComboBox
 
 class Crypto(QWidget):
     def __init__(self):
@@ -19,6 +20,8 @@ class Crypto(QWidget):
         crypto_currency_combobox = CryptoNamesComboBox()
         global crypto_symbols
         crypto_symbols = CryptoSymbolsComboBox()
+        global symbolsComboBox
+        symbolsComboBox = CurrencySymbolsComboBox()
         self.initUI()
         
         
@@ -27,9 +30,12 @@ class Crypto(QWidget):
         #stockWindow = QWidget()
 
         # Set size and position of the window
-        self.resize(500, 500)
-        self.move(800, 200)
+        #self.resize(500, 500)
+        #self.move(800, 200)
+        self.resize(1300, 800)
+        self.move(0, 200)
         self.setWindowTitle('Crypto Currencies')
+        self.setWindowIcon(QIcon('assets/icon.jpeg'))
         self.show()
         
         #main layout of the screen
@@ -38,6 +44,7 @@ class Crypto(QWidget):
         # add crypto currencly list
         crypto_currency_combobox.currentIndexChanged.connect(self.on_index_changed)
         crypto_symbols.currentIndexChanged.connect(self.on_change_cryptoSymbol)
+        symbolsComboBox.currentIndexChanged.connect(self.on_currency_symbol_changed)
         
         # add area to display crypto market data
         self.dashboard_vbox = QVBoxLayout()
@@ -45,7 +52,13 @@ class Crypto(QWidget):
         # add data to display ~1500 top performing ERC20 tokens
         self.displayERC20()
         self.displayNFTCollections()
+        self.displayRecentTokenSwaps()
         #self.dashboard_vbox.addWidget(erc_df)
+        
+        # add button to chart crypto and currency pairs
+        self.chart_crypto_currency_pair_btn = QPushButton("Chart Crypto/Fiat Pair", self)
+        self.chart_crypto_currency_pair_btn.setToolTip("To chart the selected crypto currency and the selected fiat symbol")
+        self.chart_crypto_currency_pair_btn.clicked.connect(self.chart_crypto_currency_pair)
         
         # add the button
         self.search = QPushButton("Find Crypto", self)
@@ -61,6 +74,8 @@ class Crypto(QWidget):
         self.hbox.addWidget(crypto_currency_combobox)
         self.hbox.addWidget(self.graph)
         self.hbox.addWidget(crypto_symbols)
+        self.hbox.addWidget(self.chart_crypto_currency_pair_btn)
+        self.hbox.addWidget(symbolsComboBox)
         self.hbox.addStretch(1)
                
         #now add all other layouts on the main layouts
@@ -69,7 +84,27 @@ class Crypto(QWidget):
         self.vbox.addLayout(self.hbox)
        
         self.setLayout(self.vbox)  
-     
+    
+    def displayRecentTokenSwaps(self):
+        global swap_df
+        swap_df = pd.DataFrame(openbb.crypto.defi.swaps()) #default list last 100 swaps
+        swap_df.head()
+        print(swap_df)
+        self.show()
+        self.label = QLabel("Last 100 Token Swap", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(swap_df))
+        for i in range(len(swap_df)):
+            for j in range(4):
+                self.table.setItem(i, j, QTableWidgetItem(str(
+                    swap_df.iloc[i][j])))
+
+        self.setLayout(self.vbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
+        
     def displayERC20(self):
         global erc_df
         erc_df = pd.DataFrame(openbb.crypto.onchain.erc20_tokens())
@@ -109,14 +144,25 @@ class Crypto(QWidget):
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.table)
         self.show()
+    
+    def on_currency_symbol_changed(self):
+        print("on currency symbol change")
+        global selected_currency_symbol
+        selected_currency_symbol = symbolsComboBox.currentText()
+        print("To pair: %s" % selected_currency_symbol)
         
     def on_index_changed(self):
         global selected_crypto
         selected_crypto = crypto_currency_combobox.currentText()  
         
+    def chart_crypto_currency_pair(self):
+        chart_df = pd.DataFrame(openbb.crypto.load(selected_symbol,selected_currency_symbol))
+        openbb.crypto.chart(chart_df, selected_symbol, selected_currency_symbol)
+        
+        
     def graphCrypto(self):
         print("Selected crypto: %s" % selected_symbol)
-        chart_df = openbb.crypto.candle(symbol=selected_symbol) 
+        chart_df = openbb.crypto.candle(selected_symbol) 
         chart_dict = chart_df.to_dict()
         new_df = pd.DataFrame(chart_df)
     

@@ -11,6 +11,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.CryptoNamesComboBox import CryptoNamesComboBox
 from modules.CryptoSymbolsComboBox import CryptoSymbolsComboBox
+from modules.CurrencySymbolsComboBox import CurrencySymbolsComboBox
 
 class Crypto(QWidget):
     def __init__(self):
@@ -19,6 +20,8 @@ class Crypto(QWidget):
         crypto_currency_combobox = CryptoNamesComboBox()
         global crypto_symbols
         crypto_symbols = CryptoSymbolsComboBox()
+        global symbolsComboBox
+        symbolsComboBox = CurrencySymbolsComboBox()
         self.initUI()
         
         
@@ -41,6 +44,7 @@ class Crypto(QWidget):
         # add crypto currencly list
         crypto_currency_combobox.currentIndexChanged.connect(self.on_index_changed)
         crypto_symbols.currentIndexChanged.connect(self.on_change_cryptoSymbol)
+        symbolsComboBox.currentIndexChanged.connect(self.on_currency_symbol_changed)
         
         # add area to display crypto market data
         self.dashboard_vbox = QVBoxLayout()
@@ -64,6 +68,7 @@ class Crypto(QWidget):
         self.hbox.addWidget(crypto_currency_combobox)
         self.hbox.addWidget(self.graph)
         self.hbox.addWidget(crypto_symbols)
+        self.hbox.addWidget(symbolsComboBox)
         self.hbox.addStretch(1)
                
         #now add all other layouts on the main layouts
@@ -112,6 +117,12 @@ class Crypto(QWidget):
         self.layout().addWidget(self.label)
         self.layout().addWidget(self.table)
         self.show()
+    
+    def on_currency_symbol_changed(self):
+        print("on currency symbol change")
+        global selected_currency_symbol
+        selected_currency_symbol = symbolsComboBox.currentText()
+        print("To pair: %s" % selected_currency_symbol)
         
     def on_index_changed(self):
         global selected_crypto
@@ -119,7 +130,7 @@ class Crypto(QWidget):
         
     def graphCrypto(self):
         print("Selected crypto: %s" % selected_symbol)
-        chart_df = openbb.crypto.candle(symbol=selected_symbol) 
+        chart_df = openbb.crypto.candle(selected_symbol) 
         chart_dict = chart_df.to_dict()
         new_df = pd.DataFrame(chart_df)
     

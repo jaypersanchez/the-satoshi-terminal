@@ -29,6 +29,7 @@ class Forex(QWidget):
         #main layout of the screen
         self.vbox = QVBoxLayout()
         
+        self.loadCurrencyList()
         forexComboBox.currentIndexChanged.connect(self.on_index_changed)
         
         # add the button
@@ -52,6 +53,11 @@ class Forex(QWidget):
         global selected_pair
         selected_pair = forexComboBox.currentText()
         print("Selected pair: %s" % selected_pair) 
+        
+    def loadCurrencyList(self):
+        global currency_list
+        currency_list = openbb.forex.get_currency_list()
+        print(currency_list)
         
     def forexQuote(self):
         forex_df = pd.DataFrame(openbb.forex.quote(selected_pair))

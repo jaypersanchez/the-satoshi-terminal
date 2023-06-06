@@ -31,9 +31,9 @@ class MainWindow(QMainWindow):
  
     def initUI(self):
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-        #self.showMaximized()
- 
+        self.setGeometry(self.left, self.top, self.width, self.height) # changed to self.width and self.height
+        self.move(0, 0)
+        
         #Create QWidget
         hbox = QHBoxLayout()
         widget = QWidget()
@@ -119,6 +119,10 @@ class MainWindow(QMainWindow):
          
 if __name__ == '__main__':
     app = QApplication([])
+    # get the screen resolution
+    res = app.desktop().screenGeometry() 
+    # print the width and height
+    print("Width:",res.width(), "Height:", res.height()) 
     window = MainWindow()
     app.setWindowIcon(QIcon('icon.png'))
     app.exec_()

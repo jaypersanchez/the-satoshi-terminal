@@ -9,10 +9,14 @@ from openbb_terminal.sdk import openbb
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
+from modules.ForexPairComboBox import ForexPairComboBox
 
 class Forex(QWidget):
     def __init__(self):
         super().__init__()
+        global forexComboBox
+        forexComboBox = ForexPairComboBox()
+        
         self.initUI()
         
     def initUI(self):
@@ -22,6 +26,12 @@ class Forex(QWidget):
         self.setWindowTitle('Forex Commodities')
         self.show()
         
+        #main layout of the screen
+        self.vbox = QVBoxLayout()
+        
+        self.loadCurrencyList()
+        forexComboBox.currentIndexChanged.connect(self.on_index_changed)
+        
         # add the button
         self.search = QPushButton("Forex Pair Quote", self)
         self.search.setToolTip('Forex Pair Quote')
@@ -30,12 +40,27 @@ class Forex(QWidget):
         self.hbox = QHBoxLayout()
         self.hbox.addStretch(1)
         self.hbox.addWidget(self.search)
+        self.hbox.addWidget(forexComboBox)
         self.hbox.addStretch(1)
-        self.setLayout(self.hbox)
-            
+        
+        #now add all other layouts on the main layouts
+        self.vbox.addStretch(1)
+        self.vbox.addLayout(self.hbox)
+        
+        self.setLayout(self.vbox)
+    
+    def on_index_changed(self):
+        global selected_pair
+        selected_pair = forexComboBox.currentText()
+        print("Selected pair: %s" % selected_pair) 
+        
+    def loadCurrencyList(self):
+        global currency_list
+        currency_list = openbb.forex.get_currency_list()
+        print(currency_list)
         
     def forexQuote(self):
-        forex_df = pd.DataFrame(openbb.forex.quote("EURUSD"))
+        forex_df = pd.DataFrame(openbb.forex.quote(selected_pair))
         forex_df.head()
         print(forex_df)
         self.show()

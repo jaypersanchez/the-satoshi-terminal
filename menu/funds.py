@@ -22,8 +22,10 @@ class Funds(QWidget):
         
         
         # Set size and position of the window
-        self.resize(500, 500)
-        self.move(800, 200)
+        #self.resize(500, 500)
+        #self.move(800, 200)
+        self.resize(1300, 800)
+        self.move(0, 200)
         self.setWindowTitle('Mutual Funds')
         self.show()
         

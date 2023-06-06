@@ -10,12 +10,17 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout,
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QSize
 from modules.ForexPairComboBox import ForexPairComboBox
+from modules.CurrencySymbolsComboBox import CurrencySymbolsComboBox
 
 class Forex(QWidget):
     def __init__(self):
         super().__init__()
         global forexComboBox
+        global symbolsComboBox_to
+        global symbolsComboBox_from
         forexComboBox = ForexPairComboBox()
+        symbolsComboBox_to = CurrencySymbolsComboBox()
+        symbolsComboBox_from = CurrencySymbolsComboBox()
         
         self.initUI()
         
@@ -34,6 +39,14 @@ class Forex(QWidget):
         
         self.loadCurrencyList()
         forexComboBox.currentIndexChanged.connect(self.on_index_changed)
+        symbolsComboBox_to.currentIndexChanged.connect(self.to_symbol_changed)
+        symbolsComboBox_from.currentIndexChanged.connect(self.from_symbol_changed)
+        
+        # add graph button
+        # add search for specific stock symbol for candle stick graphing
+        self.graph_btn = QPushButton("Graph Selected Commodity",self)
+        self.graph_btn.setToolTip("Load currency pairs to displayed on a candle stick chart")
+        self.graph_btn.clicked.connect(self.graphCurrencyPair)
         
         # add the button
         self.search = QPushButton("Forex Pair Quote", self)
@@ -44,6 +57,9 @@ class Forex(QWidget):
         self.hbox.addStretch(1)
         self.hbox.addWidget(self.search)
         self.hbox.addWidget(forexComboBox)
+        self.hbox.addWidget(self.graph_btn)
+        self.hbox.addWidget(symbolsComboBox_to)
+        self.hbox.addWidget(symbolsComboBox_from)
         self.hbox.addStretch(1)
         
         #now add all other layouts on the main layouts
@@ -52,6 +68,19 @@ class Forex(QWidget):
         
         self.setLayout(self.vbox)
     
+    def graphCurrencyPair(self):
+        print("graphing")
+        
+    def to_symbol_changed(self):
+        global selected_to
+        symbolsComboBox_to.currentText()
+        print("To pair: %s" % selected_to)
+        
+    def from_symbol_changed(self):
+        global selected_from
+        symbolsComboBox_from.currentText()    
+        print("From pair: %s" % selected_from)
+        
     def on_index_changed(self):
         global selected_pair
         selected_pair = forexComboBox.currentText()

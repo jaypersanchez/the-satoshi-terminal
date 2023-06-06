@@ -32,7 +32,12 @@ class Funds(QWidget):
         
         fund_term.currentIndexChanged.connect(self.on_index_changed)
         
-        # add manual search
+        # add load and view holdings button.  This will require user to select or enter a fund then click this load button
+        self.load_fund_view_holdings = QPushButton("View Current Fund Holdings", self)
+        self.load_fund_view_holdings.setToolTip("View holdings of your current selected fund.")
+        self.load_fund_view_holdings.clicked.connect(self.loadSelectedFund)
+        
+        # add manual search button
         self.manual_search_btn = QPushButton("Search This Fund Manually", self)
         self.manual_search_btn.setToolTip("Provide a mutual fund name that's not on the list")
         self.manual_search_btn.clicked.connect(self.searchInputFund)
@@ -50,6 +55,7 @@ class Funds(QWidget):
         self.hbox.addWidget(fund_term)
         self.hbox.addWidget(self.manual_search_btn)
         self.hbox.addWidget(self.manual_search_input_field)
+        self.hbox.addWidget(self.load_fund_view_holdings)
         self.hbox.addStretch(1)
         
         #now add all other layouts on the main layouts
@@ -58,9 +64,36 @@ class Funds(QWidget):
         
         self.setLayout(self.vbox) 
         
+    def loadSelectedFund(self):
+        #Must confirm that a fund has been selected from manual input or fund list
+        
+        print("Loaded Fund Name: %s" % loadFundName)
+        f = openbb.funds.load(loadFundName)
+        holding_df = pd.DataFrame(openbb.funds.holdings(f))
+        holding_df.head()
+        print(holding_df)
+        self.show()
+        
+        self.label = QLabel("Fund Holdings", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(holding_df))
+        for i in range(len(holding_df)):
+            for j in range(4):
+                if j < holding_df.shape[1]:
+                     self.table.setItem(i, j, QTableWidgetItem(str(
+                    holding_df.iloc[i][j])))
+
+        self.setLayout(self.hbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
+        
     def searchInputFund(self):
         global inputFundName
+        global loadFundName
         inputFundName = self.manual_search_input_field.text()
+        loadFundName = inputFundName
         print("Fund Name: %s" % inputFundName)
         funds_df = pd.DataFrame(openbb.funds.search(inputFundName,"",10))
         funds_df.head()
@@ -84,7 +117,9 @@ class Funds(QWidget):
         
     def on_index_changed(self):
         global selected_term
+        global loadFundName
         selected_term = fund_term.currentText()
+        loadFundName = selected_term
         print("Selected term: %s" % selected_term)   
         
     def fundSearch(self):

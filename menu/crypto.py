@@ -54,6 +54,11 @@ class Crypto(QWidget):
         self.displayNFTCollections()
         #self.dashboard_vbox.addWidget(erc_df)
         
+        # add button to chart crypto and currency pairs
+        self.chart_crypto_currency_pair_btn = QPushButton("Chart Crypto/Fiat Pair", self)
+        self.chart_crypto_currency_pair_btn.setToolTip("To chart the selected crypto currency and the selected fiat symbol")
+        self.chart_crypto_currency_pair_btn.clicked.connect(self.chart_crypto_currency_pair)
+        
         # add the button
         self.search = QPushButton("Find Crypto", self)
         self.search.setToolTip('Search for stablecoins')
@@ -68,6 +73,7 @@ class Crypto(QWidget):
         self.hbox.addWidget(crypto_currency_combobox)
         self.hbox.addWidget(self.graph)
         self.hbox.addWidget(crypto_symbols)
+        self.hbox.addWidget(self.chart_crypto_currency_pair_btn)
         self.hbox.addWidget(symbolsComboBox)
         self.hbox.addStretch(1)
                
@@ -127,6 +133,11 @@ class Crypto(QWidget):
     def on_index_changed(self):
         global selected_crypto
         selected_crypto = crypto_currency_combobox.currentText()  
+        
+    def chart_crypto_currency_pair(self):
+        chart_df = pd.DataFrame(openbb.crypto.load(selected_symbol,selected_currency_symbol))
+        openbb.crypto.chart(chart_df, selected_symbol, selected_currency_symbol)
+        
         
     def graphCrypto(self):
         print("Selected crypto: %s" % selected_symbol)

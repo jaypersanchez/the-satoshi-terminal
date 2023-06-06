@@ -52,6 +52,7 @@ class Crypto(QWidget):
         # add data to display ~1500 top performing ERC20 tokens
         self.displayERC20()
         self.displayNFTCollections()
+        self.displayRecentTokenSwaps()
         #self.dashboard_vbox.addWidget(erc_df)
         
         # add button to chart crypto and currency pairs
@@ -83,7 +84,27 @@ class Crypto(QWidget):
         self.vbox.addLayout(self.hbox)
        
         self.setLayout(self.vbox)  
-     
+    
+    def displayRecentTokenSwaps(self):
+        global swap_df
+        swap_df = pd.DataFrame(openbb.crypto.defi.swaps()) #default list last 100 swaps
+        swap_df.head()
+        print(swap_df)
+        self.show()
+        self.label = QLabel("Last 100 Token Swap", self)
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(4)
+        self.table.setRowCount(len(swap_df))
+        for i in range(len(swap_df)):
+            for j in range(4):
+                self.table.setItem(i, j, QTableWidgetItem(str(
+                    swap_df.iloc[i][j])))
+
+        self.setLayout(self.vbox)
+        self.layout().addWidget(self.label)
+        self.layout().addWidget(self.table)
+        self.show()
+        
     def displayERC20(self):
         global erc_df
         erc_df = pd.DataFrame(openbb.crypto.onchain.erc20_tokens())
